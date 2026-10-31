@@ -1,0 +1,8 @@
+# Segredos e configurações locais
+.env
+*.env.local
+application-local.properties
+
+# Arquivos do sistema operacional
+.DS_Store
+Thumbs.db
