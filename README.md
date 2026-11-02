@@ -1,8 +1,6 @@
 # 🚗 Sistema de Aluguel de Carros
 
 > Sistema web para gestão de aluguéis de automóveis, permitindo efetuar,
-> modificar, consultar e cancelar pedidos pela Internet.
-
 
 ---
 
@@ -47,13 +45,22 @@ positivo, seguem com a execução do contrato.
 
 ## 🏛 Arquitetura
 
-A documentação UML fica em [`docs/diagramas`](./docs/diagramas):
+#### *Diagrama de Casos de Uso*
+O diagrama de casos de uso mostra o que cada tipo de usuário (Cliente, Agente e Banco) pode fazer no sistema. Ele serve de base para definir as telas e as funcionalidades.
+![Preview](/docs/diagramas/casos-de-uso.png)
 
-- Diagrama de Casos de Uso
-- Histórias de Usuário
-- Diagrama de Classes
-- Diagrama de Pacotes
 
+#### *Diagrama de Classes:*
+O diagrama de classes representa as entidades do sistema, seus atributos e como elas se relacionam. Ele orienta a criação das entidades do back-end e das tabelas no banco de dados.
+![Preview](/docs/diagramas/diagrama-de-classes.png)
+
+
+#### *Diagrama de Pacotes:*
+O diagrama de pacotes mostra como o código está organizado em camadas (MVC no back-end e páginas, componentes e serviços no front-end). Ele deixa claro quem depende de quem.
+![Preview](/docs/diagramas/diagrama-de-pacotes.png)
+
+
+#### *Histórias de Usuário*
 ---
 
 ## 🚀 Instalação e Execução
