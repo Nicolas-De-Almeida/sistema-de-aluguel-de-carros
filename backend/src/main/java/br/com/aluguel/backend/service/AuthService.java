@@ -74,9 +74,9 @@ public class AuthService {
             case EMPRESA -> List.of("AGENTE");
             case BANCO -> List.of("AGENTE", "BANCO");
         };
-
         String token = tokenService.gerarToken(usuario.getId(), usuario.getLogin(), papeis);
-        return new AuthResponse(token, usuario.getId(), usuario.getNome(), tipo);
+        String instituicao = usuario instanceof Agente agente ? agente.getNomeInstituicao() : null;
+        return new AuthResponse(token, usuario.getId(), usuario.getNome(), tipo, instituicao);
     }
 
     private TipoConta tipoDe(Usuario usuario) {
