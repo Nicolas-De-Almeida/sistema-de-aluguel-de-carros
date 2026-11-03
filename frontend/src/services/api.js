@@ -20,19 +20,24 @@ function lerToken() {
 export async function api(caminho, { metodo = "GET", corpo } = {}) {
     const token = lerToken();
 
-    const resposta = await fetch(`${API_URL}${caminho}`, {
+    let resposta;
+    try {
+        resposta = await fetch(`${API_URL}${caminho}`, {
         method: metodo,
         headers: {
-        "Content-Type": "application/json",
-        ...(token && { Authorization: `Bearer ${token}` }),
+            "Content-Type": "application/json",
+            ...(token && { Authorization: `Bearer ${token}` }),
         },
         body: corpo ? JSON.stringify(corpo) : undefined,
-    });
+        });
+    } catch {
+        throw new ApiError(0, "Não foi possível conectar ao servidor");
+    }
 
     if (!resposta.ok) {
         const dados = await resposta.json().catch(() => ({}));
 
-        // Erros de validação, um texto por campo (ex.: senha)
+        // Erros de validação; um texto por campo (ex.: senha)
         const campos = {};
         (dados.errors ?? []).forEach((erro) => {
         campos[erro.field] = erro.defaultMessage;
