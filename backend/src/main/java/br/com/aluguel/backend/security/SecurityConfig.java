@@ -42,6 +42,7 @@ public class SecurityConfig {
                 .sessionManagement(sessao -> sessao.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(regras -> regras
                         .requestMatchers("/api/auth/**", "/error").permitAll()
+                        .requestMatchers("/api/clientes/**").hasRole("CLIENTE")
                         .anyRequest().authenticated())
                 .oauth2ResourceServer(oauth -> oauth
                         .jwt(jwt -> jwt.jwtAuthenticationConverter(conversor())));
