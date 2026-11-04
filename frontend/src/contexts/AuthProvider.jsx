@@ -10,7 +10,11 @@ function lerUsuarioSalvo() {
         return null;
     }
 }
-
+const ROTULOS_PERFIL = {
+  CLIENTE: "Cliente",
+  BANCO: "Agente financeiro",
+  EMPRESA: "Agente (empresa)",
+};
 export function AuthProvider({ children }) {
     const [usuario, setUsuario] = useState(lerUsuarioSalvo);
 
@@ -40,6 +44,7 @@ export function AuthProvider({ children }) {
         usuario,
         perfil,
         paginaInicial,
+        rotuloPerfil: usuario ? ROTULOS_PERFIL[usuario.tipo] : "",
         estaLogado: Boolean(usuario),
         entrar,
         cadastrar,

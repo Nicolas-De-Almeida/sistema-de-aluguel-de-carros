@@ -1,16 +1,14 @@
-import Botao from "../../components/Botao";
-import { useAuth } from "../../contexts/useAuth";
+import CabecalhoPagina from "../../components/CabecalhoPagina";
+import Card from "../../components/Card";
+import LayoutLogado from "../../components/LayoutLogado";
 
 export default function PedidosAgente() {
-  const { usuario, sair } = useAuth();
-
   return (
-    <div className="flex flex-col items-start gap-3 p-10">
-      <h1 className="text-2xl font-bold">Pedidos para análise</h1>
-      <p className="text-suave">Olá, {usuario.nome}!</p>
-      <Botao variante="secundario" onClick={sair}>
-        Sair
-      </Botao>
-    </div>
+    <LayoutLogado titulo="Pedidos para Análise">
+      <CabecalhoPagina titulo="Pedidos para Análise" descricao="Avalie solicitações de aluguel e emita seu parecer financeiro."/>
+      <Card>
+        <p className="text-suave">A lista de pedidos para análise será exibida aqui.</p>
+      </Card>
+    </LayoutLogado>
   );
 }
