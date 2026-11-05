@@ -23,3 +23,18 @@ export function lerMoeda(texto) {
   const numero = Number(String(texto).replace(/\./g, "").replace(",", "."));
   return Number.isNaN(numero) ? null : numero;
 }
+
+// "2026-11-04" vira "04/11/2026"
+export function formatarData(iso) {
+  if (!iso) {
+    return "";
+  }
+  const [ano, mes, dia] = iso.split("-");
+  return `${dia}/${mes}/${ano}`;
+}
+
+// abc1d23 vira ABC-1D23
+export function mascararPlaca(texto) {
+  const limpo = texto.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 7);
+  return limpo.length > 3 ? `${limpo.slice(0, 3)}-${limpo.slice(3)}` : limpo;
+}

@@ -5,6 +5,7 @@ export default function ModalConfirmacao({
     titulo,
     texto,
     rotuloConfirmar,
+    rotuloCancelar = "Cancelar",
     onConfirmar,
     onCancelar,
     carregando = false,
@@ -26,11 +27,12 @@ export default function ModalConfirmacao({
                 <p className="mt-2 leading-relaxed text-suave">{texto}</p>
                 <div className="mt-6 flex justify-end gap-3">
                     <Botao variante="secundario" onClick={onCancelar} disabled={carregando}>
-                        Cancelar
+                        {rotuloCancelar}
                     </Botao>
                     <Botao variante="perigo" onClick={onConfirmar} disabled={carregando}>
                         {carregando ? "Aguarde..." : rotuloConfirmar}
                     </Botao>
+                    
                 </div>
             </div>
         </div>

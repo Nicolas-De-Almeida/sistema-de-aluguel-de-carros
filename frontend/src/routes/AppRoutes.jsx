@@ -6,6 +6,8 @@ import PedidosAgente from "../pages/agente/PedidosAgente";
 import DadosCliente from "../pages/cliente/DadosCliente";
 import PedidosCliente from "../pages/cliente/PedidosCliente";
 import PrivateRoute from "./PrivateRoute";
+import DetalhesPedido from "../pages/cliente/DetalhesPedido";
+import FormularioPedido from "../pages/cliente/FormularioPedido";
 
 export default function AppRoutes() {
   const { estaLogado, paginaInicial } = useAuth();
@@ -24,6 +26,27 @@ export default function AppRoutes() {
         element={
           <PrivateRoute perfil="CLIENTE">
             <PedidosCliente />
+          </PrivateRoute>
+        }/>
+      <Route
+        path="/cliente/pedidos/novo"
+        element={
+          <PrivateRoute perfil="CLIENTE">
+            <FormularioPedido />
+          </PrivateRoute>
+        }/>
+      <Route
+        path="/cliente/pedidos/:id"
+        element={
+          <PrivateRoute perfil="CLIENTE">
+            <DetalhesPedido />
+          </PrivateRoute>
+        }/>
+      <Route
+        path="/cliente/pedidos/:id/editar"
+        element={
+          <PrivateRoute perfil="CLIENTE">
+            <FormularioPedido />
           </PrivateRoute>
         }/>
       <Route
