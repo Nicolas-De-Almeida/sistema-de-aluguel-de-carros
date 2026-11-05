@@ -54,9 +54,12 @@ public class PedidoAluguel {
     public boolean podeSerEditado() {
         return status == StatusPedido.EM_ANALISE;
     }
+    public boolean podeSerCancelado() {
+        return status == StatusPedido.EM_ANALISE || status == StatusPedido.APROVADO;
+    }
 
     public void cancelar() {
-        if (status == StatusPedido.CANCELADO || status == StatusPedido.REJEITADO) {
+        if (!podeSerCancelado()) {
             throw new IllegalStateException("Este pedido não pode mais ser cancelado");
         }
         this.status = StatusPedido.CANCELADO;
