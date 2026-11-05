@@ -1,6 +1,7 @@
 const variantes = {
-  primario: "border-marca-600 bg-marca-600 text-white hover:bg-marca-700",
-  secundario: "border-borda bg-white text-texto hover:bg-fundo",
+    primario: "border-marca-600 bg-marca-600 text-white hover:bg-marca-700",
+    secundario: "border-borda bg-white text-texto hover:bg-fundo",
+    perigo: "border-perigo bg-perigo text-white hover:bg-red-800",
 };
 
 export default function Botao({ variante = "primario", className = "", ...props }) {

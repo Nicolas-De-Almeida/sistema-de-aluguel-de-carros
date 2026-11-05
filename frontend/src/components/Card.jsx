@@ -1,7 +1,7 @@
-export default function Card({ className = "", ...props }) {
+export default function Card({ className = "p-7", ...props }) {
   return (
     <div
-      className={`rounded-xl border border-borda bg-white p-7 shadow-card ${className}`}
+      className={`rounded-xl border border-borda bg-white shadow-card ${className}`}
       {...props}/>
   );
 }

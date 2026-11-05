@@ -3,6 +3,7 @@ import { useAuth } from "../contexts/useAuth";
 import Cadastro from "../pages/auth/Cadastro";
 import Login from "../pages/auth/Login";
 import PedidosAgente from "../pages/agente/PedidosAgente";
+import DadosCliente from "../pages/cliente/DadosCliente";
 import PedidosCliente from "../pages/cliente/PedidosCliente";
 import PrivateRoute from "./PrivateRoute";
 
@@ -11,29 +12,36 @@ export default function AppRoutes() {
 
   // Quem já está logado não precisa ver login e cadastro
   const publica = (pagina) =>
-    estaLogado ? <Navigate to={paginaInicial} replace/> : pagina;
+    estaLogado ? <Navigate to={paginaInicial} replace /> : pagina;
 
   return (
     <Routes>
-      <Route path="/login" element={publica(<Login />)}/>
-      <Route path="/cadastro" element={publica(<Cadastro/>)} />
+      <Route path="/login" element={publica(<Login />)} />
+      <Route path="/cadastro" element={publica(<Cadastro />)} />
 
       <Route
         path="/cliente/pedidos"
         element={
           <PrivateRoute perfil="CLIENTE">
-            <PedidosCliente/>
+            <PedidosCliente />
+          </PrivateRoute>
+        }/>
+      <Route
+        path="/cliente/dados"
+        element={
+          <PrivateRoute perfil="CLIENTE">
+            <DadosCliente />
           </PrivateRoute>
         }/>
       <Route
         path="/agente/pedidos"
         element={
           <PrivateRoute perfil="AGENTE">
-            <PedidosAgente/>
+            <PedidosAgente />
           </PrivateRoute>
         }/>
 
-      <Route path="*" element={<Navigate to="/login" replace/>}/>
+      <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
   );
 }

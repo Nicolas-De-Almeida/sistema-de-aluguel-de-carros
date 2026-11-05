@@ -35,7 +35,10 @@ export function AuthProvider({ children }) {
         localStorage.removeItem(CHAVE_USUARIO);
         setUsuario(null);
     }
-
+    // Mantém o nome do topo e do menu em dia depois de editar os dados
+    function atualizarUsuario(parcial) {
+        guardar({ ...usuario, ...parcial });
+    }
     // Empresa e Banco são "agentes"; só o cliente tem o perfil CLIENTE
     const perfil = usuario ? (usuario.tipo === "CLIENTE" ? "CLIENTE" : "AGENTE") : null;
     const paginaInicial = perfil === "AGENTE" ? "/agente/pedidos" : "/cliente/pedidos";
@@ -49,6 +52,7 @@ export function AuthProvider({ children }) {
         entrar,
         cadastrar,
         sair,
+        atualizarUsuario
     };
 
     return <AuthContext.Provider value={valor}>{children}</AuthContext.Provider>;

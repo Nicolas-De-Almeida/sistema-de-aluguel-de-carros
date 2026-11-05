@@ -36,7 +36,11 @@ export async function api(caminho, { metodo = "GET", corpo } = {}) {
 
     if (!resposta.ok) {
         const dados = await resposta.json().catch(() => ({}));
-
+        // Sessão expirada; limpa o login e volta para a tela de entrada
+        if (resposta.status === 401 && !caminho.startsWith("/api/auth")) {
+        localStorage.removeItem(CHAVE_USUARIO);
+        window.location.assign("/login");
+        }
         // Erros de validação; um texto por campo (ex.: senha)
         const campos = {};
         (dados.errors ?? []).forEach((erro) => {

@@ -1,10 +1,13 @@
 import { NavLink } from "react-router";
-import { ClipboardList, FileText } from "lucide-react";
+import { ClipboardList, FileText, User } from "lucide-react";
 import { useAuth } from "../contexts/useAuth";
 
 // Cada tela nova entra aqui junto com a sua rota
 const MENUS = {
-    CLIENTE: [{ rotulo: "Meus Pedidos", caminho: "/cliente/pedidos", icone: FileText }],
+    CLIENTE: [
+        { rotulo: "Meus Pedidos", caminho: "/cliente/pedidos", icone: FileText },
+        { rotulo: "Meus Dados", caminho: "/cliente/dados", icone: User },
+    ],
     AGENTE: [{ rotulo: "Pedidos para Análise", caminho: "/agente/pedidos", icone: ClipboardList }],
 };
 
