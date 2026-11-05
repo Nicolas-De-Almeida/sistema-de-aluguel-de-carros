@@ -43,6 +43,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(regras -> regras
                         .requestMatchers("/api/auth/**", "/error").permitAll()
                         .requestMatchers("/api/clientes/**").hasRole("CLIENTE")
+                        .requestMatchers("/api/pedidos/**").hasRole("CLIENTE")
                         .anyRequest().authenticated())
                 .oauth2ResourceServer(oauth -> oauth
                         .jwt(jwt -> jwt.jwtAuthenticationConverter(conversor())));
