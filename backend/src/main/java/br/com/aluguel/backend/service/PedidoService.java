@@ -114,7 +114,7 @@ public class PedidoService {
         automovel.setProprietario(dados.proprietario());
     }
 
-    private PedidoResponse paraResposta(PedidoAluguel pedido) {
+    public PedidoResponse paraResposta(PedidoAluguel pedido) {
         Automovel a = pedido.getAutomovel();
         AutomovelDto automovel = new AutomovelDto(
                 a.getMatricula(), a.getAno(), a.getMarca(), a.getModelo(), a.getPlaca(), a.getProprietario());

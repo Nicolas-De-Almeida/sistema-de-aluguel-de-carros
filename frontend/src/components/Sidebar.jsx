@@ -3,7 +3,7 @@ import { useAuth } from "../contexts/useAuth";
 import Avatar from "./Avatar";
 import MenuNavegacao from "./MenuNavegacao";
 
-export default function Sidebar() {
+export default function Sidebar({ pendentes = 0 }) {
     const { usuario, rotuloPerfil, sair } = useAuth();
 
     return (
@@ -14,7 +14,7 @@ export default function Sidebar() {
                 </span>
                 <span className="flex flex-col leading-tight font-semibold">
                     Aluguel
-                <small className="text-xs font-medium tracking-[0.18em] text-white/60">DE CARROS</small>
+                    <small className="text-xs font-medium tracking-[0.18em] text-white/60">DE CARROS</small>
                 </span>
             </div>
 
@@ -22,7 +22,7 @@ export default function Sidebar() {
                 <p className="mb-3 px-3 text-xs font-semibold tracking-[0.12em] text-white/50 uppercase">
                     Menu principal
                 </p>
-                <MenuNavegacao />
+                <MenuNavegacao pendentes={pendentes} />
             </div>
 
             <div className="flex items-center gap-3 border-t border-white/10 px-4 py-4">

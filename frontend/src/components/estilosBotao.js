@@ -5,6 +5,8 @@ const VARIANTES = {
     primario: "border-marca-600 bg-marca-600 text-white hover:bg-marca-700",
     secundario: "border-borda bg-white text-texto hover:bg-fundo",
     perigo: "border-perigo bg-perigo text-white hover:bg-red-800",
+    sucesso: "border-sucesso bg-sucesso text-white hover:bg-green-800",
+    perigoSuave: "border-red-200 bg-white text-perigo hover:bg-perigo-fundo",
 };
 
 export function classesBotao(variante = "primario", extra = "") {

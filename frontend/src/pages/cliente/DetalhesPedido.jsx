@@ -11,15 +11,7 @@ import Secao from "../../components/SecaoFormulario";
 import { pedidoService } from "../../services/pedidoService";
 import { formatarData, numeroBR } from "../../utils/formatadores";
 import { rotuloProprietario } from "../../utils/rotulos";
-
-function Dado({ rotulo, valor }) {
-    return (
-        <div>
-            <p className="text-[13px] tracking-wide text-suave uppercase">{rotulo}</p>
-            <p className="mt-1 font-semibold">{valor}</p>
-        </div>
-    );
-}
+import Dado from "../../components/Dado";
 
 function Etapa({ titulo, descricao, estado, ultima }) {
     const cores = {
