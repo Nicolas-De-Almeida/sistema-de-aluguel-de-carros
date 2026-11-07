@@ -93,11 +93,12 @@ public class PedidoService {
     private void exigirDadosCompletos(Cliente cliente) {
         boolean incompleto = vazio(cliente.getRg()) || vazio(cliente.getCpf())
                 || vazio(cliente.getEndereco()) || vazio(cliente.getProfissao())
+                || cliente.getScoreCredito() == null
                 || cliente.getRendimentos().isEmpty();
 
         if (incompleto) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                    "Complete seus dados pessoais e informe ao menos um empregador antes de criar um pedido");
+                    "Complete seus dados pessoais, informe seu score de crédito e ao menos um empregador antes de criar um pedido");
         }
     }
 
@@ -112,12 +113,15 @@ public class PedidoService {
         automovel.setModelo(dados.modelo().trim());
         automovel.setPlaca(dados.placa().trim().toUpperCase());
         automovel.setProprietario(dados.proprietario());
+        automovel.setValor(dados.valor());
     }
 
+    // Público porque o AnaliseService também usa
     public PedidoResponse paraResposta(PedidoAluguel pedido) {
         Automovel a = pedido.getAutomovel();
         AutomovelDto automovel = new AutomovelDto(
-                a.getMatricula(), a.getAno(), a.getMarca(), a.getModelo(), a.getPlaca(), a.getProprietario());
+                a.getMatricula(), a.getAno(), a.getMarca(), a.getModelo(), a.getPlaca(),
+                a.getProprietario(), a.getValor());
 
         ContratoCreditoDto contrato = null;
         ContratoCredito c = pedido.getContratoCredito();

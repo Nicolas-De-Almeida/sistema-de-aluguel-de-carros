@@ -109,7 +109,7 @@ public class AnaliseService {
 
         ClienteAnaliseDto cliente = new ClienteAnaliseDto(
                 c.getNome(), c.getCpf(), c.getRg(), c.getProfissao(), c.getEndereco(),
-                c.getDataCadastro(), rendimentos, c.calcularRendaTotal());
+                c.getScoreCredito(), c.getDataCadastro(), rendimentos, c.calcularRendaTotal());
 
         boolean ehBanco = agente instanceof Banco;
         boolean podeAvaliar = pedido.getStatus() == StatusPedido.EM_ANALISE;

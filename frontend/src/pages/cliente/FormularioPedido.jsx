@@ -5,13 +5,14 @@ import Botao from "../../components/Botao";
 import BotaoLink from "../../components/BotaoLink";
 import CabecalhoPagina from "../../components/CabecalhoPagina";
 import Campo from "../../components/Campo";
+import CampoMoeda from "../../components/CampoMoeda";
 import Card from "../../components/Card";
 import LayoutLogado from "../../components/LayoutLogado";
 import Secao from "../../components/SecaoFormulario";
 import Selecao from "../../components/Selecao";
 import { clienteService } from "../../services/clienteService";
 import { pedidoService } from "../../services/pedidoService";
-import { mascararPlaca } from "../../utils/formatadores";
+import { lerMoeda, mascararPlaca, numeroBR } from "../../utils/formatadores";
 import { PROPRIETARIOS } from "../../utils/rotulos";
 
 const FORM_VAZIO = {
@@ -20,6 +21,7 @@ const FORM_VAZIO = {
     ano: "",
     marca: "",
     modelo: "",
+    valor: "",
     proprietario: "CLIENTE",
     associarCredito: false,
 };
@@ -52,6 +54,7 @@ export default function FormularioPedido() {
                 ano: String(a.ano),
                 marca: a.marca,
                 modelo: a.modelo,
+                valor: a.valor != null ? numeroBR(a.valor) : "",
                 proprietario: a.proprietario,
                 associarCredito: pedido.associarCredito,
             });
@@ -62,10 +65,11 @@ export default function FormularioPedido() {
                 cliente.cpf &&
                 cliente.endereco &&
                 cliente.profissao &&
+                cliente.scoreCredito != null &&
                 cliente.rendimentos.length > 0;
             if (!completo) {
                 setBloqueio(
-                "Antes de criar um pedido, complete seus dados pessoais e informe ao menos um empregador."
+                "Antes de criar um pedido, complete seus dados pessoais, informe seu score de crédito e ao menos um empregador."
                 );
             }
             }
@@ -103,6 +107,7 @@ export default function FormularioPedido() {
             ano: form.ano === "" ? null : Number(form.ano),
             marca: form.marca,
             modelo: form.modelo,
+            valor: lerMoeda(form.valor),
             proprietario: form.proprietario,
         },
         associarCredito: form.associarCredito,
@@ -114,7 +119,7 @@ export default function FormularioPedido() {
             : await pedidoService.criar(corpo);
         navigate(`/cliente/pedidos/${salvo.id}`);
         } catch (e) {
-        // O backend devolve "automovel.placa"; a tela usa só "placa"
+        // O back-end devolve "automovel.placa"; a tela usa só "placa"
         const campos = {};
         Object.entries(e.campos ?? {}).forEach(([campo, mensagem]) => {
             campos[campo.replace("automovel.", "")] = mensagem;
@@ -144,28 +149,30 @@ export default function FormularioPedido() {
 
             {carregando ? (
                 <Card>
-                    <p className="text-suave">Carregando...</p>
+                <p className="text-suave">Carregando...</p>
                 </Card>
-                ) : bloqueio ? (
+            ) : bloqueio ? (
                 <Card className="flex flex-col items-start gap-4 p-7">
-                    <p className="flex items-center gap-2 font-semibold">
-                        <Info size={18} className="text-aviso" /> {bloqueio}
-                    </p>
-                    <BotaoLink to={editando ? voltarPara : "/cliente/dados"}>
-                        {editando ? "Voltar ao pedido" : "Completar meus dados"}
-                    </BotaoLink>
+                <p className="flex items-center gap-2 font-semibold">
+                    <Info size={18} className="text-aviso" /> {bloqueio}
+                </p>
+                <BotaoLink to={editando ? voltarPara : "/cliente/dados"}>
+                    {editando ? "Voltar ao pedido" : "Completar meus dados"}
+                </BotaoLink>
                 </Card>
             ) : (
                 <Card className="overflow-hidden p-0">
                     <form onSubmit={salvar}>
                         <Secao icone={Car} titulo="Automóvel" descricao="Informe os dados de identificação do veículo.">
                             <div className="grid gap-5 md:grid-cols-3">
-                                <Campo id="matricula"
+                                <Campo
+                                id="matricula"
                                 rotulo="Matrícula"
                                 placeholder="Ex.: 202501234"
                                 value={form.matricula}
                                 onChange={alterar}
                                 erro={erros.matricula}/>
+
                                 <Campo
                                 id="placa"
                                 rotulo="Placa"
@@ -173,6 +180,7 @@ export default function FormularioPedido() {
                                 value={form.placa}
                                 onChange={alterar}
                                 erro={erros.placa}/>
+
                                 <Campo
                                 id="ano"
                                 rotulo="Ano"
@@ -181,6 +189,7 @@ export default function FormularioPedido() {
                                 value={form.ano}
                                 onChange={alterar}
                                 erro={erros.ano}/>
+
                                 <Campo
                                 id="marca"
                                 rotulo="Marca"
@@ -188,22 +197,27 @@ export default function FormularioPedido() {
                                 value={form.marca}
                                 onChange={alterar}
                                 erro={erros.marca}/>
-                                <div className="md:col-span-2">
-                                    <Campo
-                                        id="modelo"
-                                        rotulo="Modelo"
-                                        placeholder="Ex.: Corolla XEi 2.0"
-                                        value={form.modelo}
-                                        onChange={alterar}
-                                        erro={erros.modelo}/>
-                                </div>
+
+                                <Campo
+                                id="modelo"
+                                rotulo="Modelo"
+                                placeholder="Ex.: Corolla XEi 2.0"
+                                value={form.modelo}
+                                onChange={alterar}
+                                erro={erros.modelo}/>
+
+                                <CampoMoeda
+                                id="valor"
+                                rotulo="Valor do veículo"
+                                placeholder="0,00"
+                                value={form.valor}
+                                onChange={alterar}
+                                erro={erros.valor}/>
+
                             </div>
                         </Secao>
 
-                        <Secao
-                            icone={FileText}
-                            titulo="Contrato"
-                            descricao="Defina o proprietário e o vínculo financeiro.">
+                        <Secao icone={FileText} titulo="Contrato" descricao="Defina o proprietário e o vínculo financeiro.">
                             <div className="grid items-end gap-5 md:grid-cols-2">
                                 <Selecao
                                 id="proprietario"
@@ -213,27 +227,27 @@ export default function FormularioPedido() {
                                 onChange={alterar}
                                 erro={erros.proprietario}/>
                                 <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-borda bg-fundo p-4">
-                                    <input
-                                        type="checkbox"
-                                        name="associarCredito"
-                                        checked={form.associarCredito}
-                                        onChange={alterar}
-                                        className="mt-1 size-4 accent-marca-600"/>
-                                    <span>
-                                        <span className="block text-sm font-semibold">
-                                            Associar a contrato de crédito
-                                        </span>
-                                        <span className="block text-sm text-suave">
-                                            O pedido será enviado para análise bancária.
-                                        </span>
+                                <input
+                                    type="checkbox"
+                                    name="associarCredito"
+                                    checked={form.associarCredito}
+                                    onChange={alterar}
+                                    className="mt-1 size-4 accent-marca-600"/>
+                                <span>
+                                    <span className="block text-sm font-semibold">
+                                    Associar a contrato de crédito
                                     </span>
+                                    <span className="block text-sm text-suave">
+                                    O pedido será enviado para análise bancária.
+                                    </span>
+                                </span>
                                 </label>
                             </div>
 
                             {form.associarCredito && (
                                 <p className="mt-4 flex items-center gap-2 rounded-[10px] bg-marca-50 px-4 py-3 text-sm text-marca-700">
                                 <Info size={16} className="shrink-0" />
-                                Os dados de financiamento serão definidos pelo banco após a análise do pedido.
+                                    Os dados de financiamento serão definidos pelo banco após a análise do pedido.
                                 </p>
                             )}
                         </Secao>

@@ -14,7 +14,7 @@ import Secao from "../../components/SecaoFormulario";
 import Selecao from "../../components/Selecao";
 import { analiseService } from "../../services/analiseService";
 import { formatarData, lerMoeda, numeroBR } from "../../utils/formatadores";
-import { rotuloProprietario } from "../../utils/rotulos";
+import { faixaScore, rotuloProprietario } from "../../utils/rotulos";
 
 const PARCELAS = [12, 24, 36, 48, 60].map((n) => ({
     valor: String(n),
@@ -115,6 +115,7 @@ export default function AvaliarPedido() {
     const pedido = analise?.pedido;
     const cliente = analise?.cliente;
     const titulo = analise?.podeAvaliar ? "Avaliar Pedido" : "Detalhes do Pedido";
+    const faixa = cliente?.scoreCredito != null ? faixaScore(cliente.scoreCredito) : null;
 
     return (
         <LayoutLogado titulo={titulo}>
@@ -152,7 +153,7 @@ export default function AvaliarPedido() {
                 <div className="grid gap-6 xl:grid-cols-[2fr_1fr]">
                     <div className="flex flex-col gap-6">
                         <Card className="overflow-hidden p-0">
-                            <Secao icone={User} titulo="Dados do cliente" descricao="Informações pessoais e profissionais.">
+                            <Secao icone={User} titulo="Dados do cliente" descricao="Informações pessoais e profissionais." >
                                 <div className="mb-6 flex items-center gap-3 rounded-xl border border-borda bg-fundo p-4">
                                     <Avatar nome={cliente.nome} />
                                     <div className="leading-tight">
@@ -167,23 +168,41 @@ export default function AvaliarPedido() {
                                     <Dado rotulo="RG" valor={cliente.rg} />
                                     <Dado rotulo="Profissão" valor={cliente.profissao} />
                                 </div>
-                                <div className="mt-6">
-                                    <Dado rotulo="Endereço" valor={cliente.endereco} />
+                                <div className="mt-6 grid gap-6 sm:grid-cols-3">
+                                    <div className="sm:col-span-2">
+                                        <Dado rotulo="Endereço" valor={cliente.endereco} />
+                                    </div>
+                                    <div>
+                                        <p className="text-[13px] tracking-wide text-suave uppercase">
+                                            Score de crédito
+                                        </p>
+                                        <div className="mt-1 flex items-center gap-2">
+                                            <span className="font-semibold">
+                                                {cliente.scoreCredito ?? "Não informado"}
+                                            </span>
+                                            {faixa && (
+                                                <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${faixa.classes}`}>
+                                                    {faixa.rotulo}
+                                                </span>
+                                            )}
+                                        </div>
+                                        <p className="mt-1 text-[13px] text-suave">Informado pelo cliente</p>
+                                    </div>
                                 </div>
                             </Secao>
                         </Card>
 
                         <Card className="overflow-hidden p-0">
-                            <Secao icone={Building2} titulo="Renda e empregadores" descricao="Fontes de renda declaradas pelo cliente.">
+                            <Secao icone={Building2} titulo="Renda e empregadores" descricao="Fontes de renda declaradas pelo cliente." >
                                 {cliente.rendimentos.length === 0 ? (
                                     <p className="text-suave">O cliente não informou empregadores.</p>
                                 ) : (
                                     <ul className="flex flex-col gap-2">
                                         {cliente.rendimentos.map((r, i) => (
-                                            <li key={i} className="flex items-center justify-between gap-4 rounded-lg border border-borda bg-fundo px-4 py-3" >
+                                            <li key={i}className="flex items-center justify-between gap-4 rounded-lg border border-borda bg-fundo px-4 py-3">
                                                 <span className="flex items-center gap-3 font-semibold">
                                                     <span className="grid size-6 place-items-center rounded-full bg-marca-50 text-xs font-bold text-marca-600">
-                                                    {i + 1}
+                                                        {i + 1}
                                                     </span>
                                                     {r.entidadeEmpregadora}
                                                 </span>
@@ -202,91 +221,92 @@ export default function AvaliarPedido() {
                         <Card className="overflow-hidden p-0">
                             <Secao icone={Car} titulo="Automóvel" descricao="Veículo vinculado ao pedido.">
                                 <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                                    <Dado rotulo="Veículo" valor={`${pedido.automovel.marca} ${pedido.automovel.modelo}`}/>
+                                    <Dado rotulo="Veículo" valor={`${pedido.automovel.marca} ${pedido.automovel.modelo}`} />
                                     <Dado rotulo="Ano" valor={pedido.automovel.ano} />
                                     <Dado rotulo="Placa" valor={pedido.automovel.placa} />
                                     <Dado rotulo="Matrícula" valor={pedido.automovel.matricula} />
-                                    <Dado rotulo="Proprietário"valor={rotuloProprietario(pedido.automovel.proprietario)}/>
+                                    <Dado rotulo="Proprietário" valor={rotuloProprietario(pedido.automovel.proprietario)}/>
+                                    <Dado rotulo="Valor do veículo" valor={ pedido.automovel.valor != null ? `R$ ${numeroBR(pedido.automovel.valor)}` : "Não informado"}/>
                                 </div>
                             </Secao>
                         </Card>
                     </div>
 
                     <div className="flex flex-col gap-6">
-                    {analise.podeAvaliar ? (
-                        <Card className="overflow-hidden p-0">
-                            <Secao icone={FileText} titulo="Parecer financeiro" descricao="Registre a decisão desta análise.">
-                                <div className="flex flex-col gap-5">
-                                    <AreaTexto
-                                        id="parecer"
-                                        rotulo="Observações da análise"
-                                        placeholder="Descreva os critérios considerados, restrições ou condições para a decisão."
-                                        maxLength={1000}
-                                        value={parecer}
-                                        onChange={(e) => setParecer(e.target.value)}
-                                        erro={erros.parecer}/>
+                        {analise.podeAvaliar ? (
+                            <Card className="overflow-hidden p-0">
+                                <Secao icone={FileText} titulo="Parecer financeiro" descricao="Registre a decisão desta análise.">
+                                    <div className="flex flex-col gap-5">
+                                        <AreaTexto
+                                            id="parecer"
+                                            rotulo="Observações da análise"
+                                            placeholder="Descreva os critérios considerados, restrições ou condições para a decisão."
+                                            maxLength={1000}
+                                            value={parecer}
+                                            onChange={(e) => setParecer(e.target.value)}
+                                            erro={erros.parecer}/>
 
-                                    {analise.precisaCredito && (
-                                        <div className="flex flex-col gap-4 border-t border-borda pt-5">
-                                        <div>
-                                            <p className="font-semibold">Contrato de crédito</p>
-                                            <p className="text-sm text-suave">Condições propostas pelo banco.</p>
-                                        </div>
-                                        <CampoMoeda
-                                            id="valorFinanciado"
-                                            rotulo="Valor financiado"
-                                            placeholder="0,00"
-                                            value={valor}
-                                            onChange={(e) => setValor(e.target.value)}
-                                            erro={erros.valor}/>
-                                        <Selecao
-                                            id="parcelas"
-                                            rotulo="Número de parcelas"
-                                            opcoes={PARCELAS}
-                                            value={parcelas}
-                                            onChange={(e) => setParcelas(e.target.value)}/>
-                                        </div>
-                                    )}
+                                        {analise.precisaCredito && (
+                                            <div className="flex flex-col gap-4 border-t border-borda pt-5">
+                                                <div>
+                                                    <p className="font-semibold">Contrato de crédito</p>
+                                                    <p className="text-sm text-suave">Condições propostas pelo banco.</p>
+                                                    {pedido.automovel.valor != null && (
+                                                    <p className="mt-2 rounded-lg bg-fundo px-3 py-2 text-sm">
+                                                        Valor do veículo:{" "}
+                                                        <strong>R$ {numeroBR(pedido.automovel.valor)}</strong>
+                                                    </p>
+                                                    )}
+                                                </div>
+                                                <CampoMoeda
+                                                    id="valorFinanciado"
+                                                    rotulo="Valor financiado"
+                                                    placeholder="0,00"
+                                                    value={valor}
+                                                    onChange={(e) => setValor(e.target.value)}
+                                                    erro={erros.valor}/>
+                                                <Selecao id="parcelas" rotulo="Número de parcelas" opcoes={PARCELAS} value={parcelas} onChange={(e) => setParcelas(e.target.value)} />
+                                            </div>
+                                        )}
 
-                                    {pedido.associarCredito && !analise.podeAprovar && (
-                                        <p className="flex gap-2 rounded-[10px] bg-marca-50 px-4 py-3 text-sm text-marca-700">
+                                        {pedido.associarCredito && !analise.podeAprovar && (
+                                            <p className="flex gap-2 rounded-[10px] bg-marca-50 px-4 py-3 text-sm text-marca-700">
+                                                <Info size={16} className="mt-0.5 shrink-0" />
+                                                Este pedido tem contrato de crédito. Somente um banco pode aprová-lo, mas você pode rejeitá-lo.
+                                            </p>
+                                        )}
+
+                                        <p className="flex gap-2 rounded-[10px] bg-aviso-fundo px-4 py-3 text-sm text-aviso">
                                             <Info size={16} className="mt-0.5 shrink-0" />
-                                            Este pedido tem contrato de crédito. Somente um banco pode aprová-lo, mas
-                                            você pode rejeitá-lo.
+                                            Após confirmar, a decisão será enviada ao cliente e não poderá ser alterada.
                                         </p>
-                                    )}
 
-                                    <p className="flex gap-2 rounded-[10px] bg-aviso-fundo px-4 py-3 text-sm text-aviso">
-                                        <Info size={16} className="mt-0.5 shrink-0" />
-                                        Após confirmar, a decisão será enviada ao cliente e não poderá ser alterada.
-                                    </p>
-
-                                    <div className="grid grid-cols-2 gap-3">
-                                        <Botao variante="perigoSuave" onClick={() => pedirConfirmacao("REJEITAR")}>
-                                        <X size={16} /> Rejeitar
-                                        </Botao>
-                                        <Botao variante="sucesso" disabled={!analise.podeAprovar} onClick={() => pedirConfirmacao("APROVAR")}>
-                                            <Check size={16} /> Aprovar
-                                        </Botao>
+                                        <div className="grid grid-cols-2 gap-3">
+                                            <Botao variante="perigoSuave" onClick={() => pedirConfirmacao("REJEITAR")}>
+                                                <X size={16} /> Rejeitar
+                                            </Botao>
+                                            <Botao variante="sucesso" disabled={!analise.podeAprovar} onClick={() => pedirConfirmacao("APROVAR")}>
+                                                <Check size={16} /> Aprovar
+                                            </Botao>
+                                        </div>
                                     </div>
-                                </div>
-                            </Secao>
-                        </Card>
-                    ) : (
+                                </Secao>
+                            </Card>
+                        ) : (
                         <>
                         <Card>
                             <h2 className="mb-3 font-bold">Parecer financeiro</h2>
                             {pedido.parecer ? (
-                            <>
-                                <p className="leading-relaxed whitespace-pre-line">{pedido.parecer}</p>
-                                <p className="mt-3 text-[13px] text-suave">
-                                {pedido.avaliadoPor} · {formatarData(pedido.dataAvaliacao)}
+                                <>
+                                    <p className="leading-relaxed whitespace-pre-line">{pedido.parecer}</p>
+                                    <p className="mt-3 text-[13px] text-suave">
+                                        {pedido.avaliadoPor} · {formatarData(pedido.dataAvaliacao)}
+                                    </p>
+                                </>
+                                ) : (
+                                <p className="text-suave">
+                                    Este pedido foi cancelado pelo cliente antes de ser analisado.
                                 </p>
-                            </>
-                            ) : (
-                            <p className="text-suave">
-                                Este pedido foi cancelado pelo cliente antes de ser analisado.
-                            </p>
                             )}
                         </Card>
 
@@ -295,7 +315,7 @@ export default function AvaliarPedido() {
                                 <h2 className="mb-4 font-bold">Contrato de crédito</h2>
                                 <div className="flex flex-col gap-4">
                                     <Dado rotulo="Valor financiado" valor={`R$ ${numeroBR(pedido.contratoCredito.valorFinanciado)}`}/>
-                                    <Dado rotulo="Parcelas" valor={`${pedido.contratoCredito.numeroParcelas}x`} />
+                                    <Dado rotulo="Parcelas" valor={`${pedido.contratoCredito.numeroParcelas}x`}/>
                                     <Dado rotulo="Banco" valor={pedido.contratoCredito.banco} />
                                 </div>
                             </Card>

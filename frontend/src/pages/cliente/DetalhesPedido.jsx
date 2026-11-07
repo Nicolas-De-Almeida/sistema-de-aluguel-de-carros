@@ -5,13 +5,13 @@ import BadgeStatus from "../../components/BadgeStatus";
 import Botao from "../../components/Botao";
 import BotaoLink from "../../components/BotaoLink";
 import Card from "../../components/Card";
+import Dado from "../../components/Dado";
 import LayoutLogado from "../../components/LayoutLogado";
 import ModalConfirmacao from "../../components/ModalConfirmacao";
 import Secao from "../../components/SecaoFormulario";
 import { pedidoService } from "../../services/pedidoService";
 import { formatarData, numeroBR } from "../../utils/formatadores";
 import { rotuloProprietario } from "../../utils/rotulos";
-import Dado from "../../components/Dado";
 
 function Etapa({ titulo, descricao, estado, ultima }) {
     const cores = {
@@ -41,9 +41,9 @@ function Etapa({ titulo, descricao, estado, ultima }) {
             </div>
         </li>
     );
-    }
+}
 
-    function montarEtapas(pedido) {
+function montarEtapas(pedido) {
     const etapas = [
         { titulo: "Pedido enviado", descricao: formatarData(pedido.dataCriacao), estado: "feito" },
     ];
@@ -71,9 +71,9 @@ function Etapa({ titulo, descricao, estado, ultima }) {
         estado: !decidido ? "pendente" : aprovado ? "feito" : "erro",
     });
     return etapas;
-    }
+}
 
-    export default function DetalhesPedido() {
+export default function DetalhesPedido() {
     const { id } = useParams();
     const [pedido, setPedido] = useState(null);
     const [erro, setErro] = useState("");
@@ -135,12 +135,12 @@ function Etapa({ titulo, descricao, estado, ultima }) {
                     <div className="flex gap-3">
                         {pedido.podeSerEditado && (
                             <BotaoLink to={`/cliente/pedidos/${pedido.id}/editar`} variante="secundario">
-                            <Pencil size={16} /> Editar pedido
+                                <Pencil size={16} /> Editar pedido
                             </BotaoLink>
                         )}
                         {pedido.podeSerCancelado && (
                             <Botao variante="perigo" onClick={() => setConfirmando(true)}>
-                            <X size={16} /> Cancelar pedido
+                                <X size={16} /> Cancelar pedido
                             </Botao>
                         )}
                     </div>
@@ -151,40 +151,37 @@ function Etapa({ titulo, descricao, estado, ultima }) {
                         <Card className="overflow-hidden p-0">
                             <Secao icone={Car} titulo="Automóvel" descricao="Veículo vinculado ao pedido.">
                                 <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                                    <Dado
-                                    rotulo="Veículo"
-                                    valor={`${pedido.automovel.marca} ${pedido.automovel.modelo}`}
-                                    />
+                                    <Dado rotulo="Veículo" valor={`${pedido.automovel.marca} ${pedido.automovel.modelo}`}/>
                                     <Dado rotulo="Ano" valor={pedido.automovel.ano} />
                                     <Dado rotulo="Placa" valor={pedido.automovel.placa} />
                                     <Dado rotulo="Matrícula" valor={pedido.automovel.matricula} />
+                                    <Dado rotulo="Proprietário" valor={rotuloProprietario(pedido.automovel.proprietario)}/>
                                     <Dado
-                                    rotulo="Proprietário"
-                                    valor={rotuloProprietario(pedido.automovel.proprietario)}
-                                    />
+                                    rotulo="Valor do veículo"
+                                    valor={
+                                        pedido.automovel.valor != null
+                                        ? `R$ ${numeroBR(pedido.automovel.valor)}`
+                                        : "Não informado"
+                                    }/>
                                 </div>
                             </Secao>
                         </Card>
 
                         <Card className="overflow-hidden p-0">
-                            <Secao
-                            icone={FileText}
-                            titulo="Contrato de crédito"
-                            descricao="Financiamento vinculado a este pedido."
-                            >
-                            {!pedido.associarCredito ? (
-                                <p className="text-suave">Este pedido não está associado a um contrato de crédito.</p>
-                            ) : pedido.contratoCredito ? (
-                                <div className="grid gap-6 sm:grid-cols-3">
-                                <Dado rotulo="Valor financiado" valor={`R$ ${numeroBR(pedido.contratoCredito.valorFinanciado)}`}/>
-                                <Dado rotulo="Parcelas" valor={`${pedido.contratoCredito.numeroParcelas}x`}/>
-                                <Dado rotulo="Banco" valor={pedido.contratoCredito.banco} />
-                                </div>
-                            ) : (
-                                <p className="text-suave">
-                                    Aguardando o banco definir as condições do financiamento.
-                                </p>
-                            )}
+                            <Secao icone={FileText} titulo="Contrato de crédito" descricao="Financiamento vinculado a este pedido.">
+                                {!pedido.associarCredito ? (
+                                    <p className="text-suave">Este pedido não está associado a um contrato de crédito.</p>
+                                ) : pedido.contratoCredito ? (
+                                    <div className="grid gap-6 sm:grid-cols-3">
+                                    <Dado rotulo="Valor financiado" valor={`R$ ${numeroBR(pedido.contratoCredito.valorFinanciado)}`}/>
+                                    <Dado rotulo="Parcelas" valor={`${pedido.contratoCredito.numeroParcelas}x`} />
+                                    <Dado rotulo="Banco" valor={pedido.contratoCredito.banco} />
+                                    </div>
+                                ) : (
+                                    <p className="text-suave">
+                                        Aguardando o banco definir as condições do financiamento.
+                                    </p>
+                                )}
                             </Secao>
                         </Card>
                     </div>

@@ -10,6 +10,7 @@ public record ClienteAnaliseDto(
         String rg,
         String profissao,
         String endereco,
+        Integer scoreCredito,
         LocalDate clienteDesde,
         List<RendimentoDto> rendimentos,
         BigDecimal rendaTotal) {

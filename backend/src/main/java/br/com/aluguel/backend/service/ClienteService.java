@@ -40,6 +40,7 @@ public class ClienteService {
         cliente.setCpf(dados.cpf());
         cliente.setEndereco(dados.endereco());
         cliente.setProfissao(dados.profissao());
+        cliente.setScoreCredito(dados.scoreCredito());
 
         // Substitui a lista inteira; os antigos são removidos pelo orphanRemoval
         cliente.getRendimentos().clear();
@@ -84,6 +85,7 @@ public class ClienteService {
                 cliente.getCpf(),
                 cliente.getEndereco(),
                 cliente.getProfissao(),
+                cliente.getScoreCredito(),
                 cliente.getDataCadastro(),
                 rendimentos);
     }

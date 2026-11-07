@@ -11,6 +11,7 @@ public record ClienteResponse(
         String cpf,
         String endereco,
         String profissao,
+        Integer scoreCredito,
         LocalDate dataCadastro,
         List<RendimentoDto> rendimentos) {
 }

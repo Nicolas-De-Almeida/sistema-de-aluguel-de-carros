@@ -7,13 +7,13 @@ import CampoMoeda from "../../components/CampoMoeda";
 import Card from "../../components/Card";
 import LayoutLogado from "../../components/LayoutLogado";
 import ModalConfirmacao from "../../components/ModalConfirmacao";
+import Secao from "../../components/SecaoFormulario";
 import { useAuth } from "../../contexts/useAuth";
 import { clienteService } from "../../services/clienteService";
 import { lerMoeda, mascararCpf, numeroBR } from "../../utils/formatadores";
-import Secao from "../../components/SecaoFormulario";
 
 const MAX_RENDIMENTOS = 3;
-const FORM_VAZIO = { nome: "", rg: "", cpf: "", endereco: "", profissao: "" };
+const FORM_VAZIO = { nome: "", rg: "", cpf: "", endereco: "", profissao: "", scoreCredito: "" };
 
 function novoRendimento(dados = {}) {
     return {
@@ -45,6 +45,7 @@ export default function DadosCliente() {
             cpf: dados.cpf ?? "",
             endereco: dados.endereco ?? "",
             profissao: dados.profissao ?? "",
+            scoreCredito: dados.scoreCredito != null ? String(dados.scoreCredito) : "",
             });
             setRendimentos(dados.rendimentos.map((r) => novoRendimento(r)));
         })
@@ -54,7 +55,14 @@ export default function DadosCliente() {
 
     function alterar(evento) {
         const { name, value } = evento.target;
-        setForm({ ...form, [name]: name === "cpf" ? mascararCpf(value) : value });
+        let novo = value;
+        if (name === "cpf") {
+        novo = mascararCpf(value);
+        }
+        if (name === "scoreCredito") {
+        novo = value.replace(/\D/g, "").slice(0, 4);
+        }
+        setForm({ ...form, [name]: novo });
         setSucesso(false);
     }
 
@@ -95,7 +103,11 @@ export default function DadosCliente() {
 
         setSalvando(true);
         try {
-        const dados = await clienteService.atualizar({ ...form, rendimentos: lista });
+        const dados = await clienteService.atualizar({
+            ...form,
+            scoreCredito: form.scoreCredito === "" ? null : Number(form.scoreCredito),
+            rendimentos: lista,
+        });
         atualizarUsuario({ nome: dados.nome });
         setSucesso(true);
         } catch (e) {
@@ -125,21 +137,15 @@ export default function DadosCliente() {
 
     return (
         <LayoutLogado titulo="Meus Dados">
-            <CabecalhoPagina
-                titulo="Meus Dados"
-                descricao="Mantenha suas informações pessoais e financeiras atualizadas."/>
+            <CabecalhoPagina titulo="Meus Dados" descricao="Mantenha suas informações pessoais e financeiras atualizadas."/>
 
             {sucesso && (
-                <p
-                role="status"
-                className="mb-4 flex items-center gap-2 rounded-[10px] bg-sucesso-fundo px-4 py-3 text-sm font-medium text-sucesso">
+                <p role="status" className="mb-4 flex items-center gap-2 rounded-[10px] bg-sucesso-fundo px-4 py-3 text-sm font-medium text-sucesso" >
                 <Check size={16} /> Alterações salvas com sucesso.
                 </p>
             )}
             {erroGeral && (
-                <p
-                role="alert"
-                className="mb-4 rounded-[10px] bg-perigo-fundo px-4 py-3 text-sm text-perigo">
+                <p role="alert" className="mb-4 rounded-[10px] bg-perigo-fundo px-4 py-3 text-sm text-perigo" >
                 {erroGeral}
                 </p>
             )}
@@ -151,10 +157,7 @@ export default function DadosCliente() {
             ) : (
                 <Card className="overflow-hidden">
                     <form onSubmit={salvar}>
-                        <Secao
-                        icone={User}
-                        titulo="Dados pessoais"
-                        descricao="Informações utilizadas na análise dos seus pedidos.">
+                        <Secao icone={User} titulo="Dados pessoais" descricao="Informações utilizadas na análise dos seus pedidos.">
                             <div className="grid gap-5 md:grid-cols-2">
                                 <Campo
                                 id="nome"
@@ -162,6 +165,7 @@ export default function DadosCliente() {
                                 value={form.nome}
                                 onChange={alterar}
                                 erro={erros.nome}/>
+                                
                                 <Campo
                                 id="rg"
                                 rotulo="RG"
@@ -169,6 +173,7 @@ export default function DadosCliente() {
                                 value={form.rg}
                                 onChange={alterar}
                                 erro={erros.rg}/>
+
                                 <Campo
                                 id="cpf"
                                 rotulo="CPF"
@@ -177,6 +182,7 @@ export default function DadosCliente() {
                                 value={form.cpf}
                                 onChange={alterar}
                                 erro={erros.cpf}/>
+
                                 <Campo
                                 id="profissao"
                                 rotulo="Profissão"
@@ -184,6 +190,16 @@ export default function DadosCliente() {
                                 value={form.profissao}
                                 onChange={alterar}
                                 erro={erros.profissao}/>
+
+                                <Campo
+                                id="scoreCredito"
+                                rotulo="Score de crédito"
+                                placeholder="De 0 a 1000"
+                                inputMode="numeric"
+                                value={form.scoreCredito}
+                                onChange={alterar}
+                                erro={erros.scoreCredito}/>
+
                                 <div className="md:col-span-2">
                                     <Campo
                                         id="endereco"
@@ -196,24 +212,18 @@ export default function DadosCliente() {
                             </div>
                         </Secao>
 
-                        <Secao
-                        icone={Building2}
-                        titulo="Entidades empregadoras"
-                        descricao="Adicione até 3 fontes de renda."
+                        <Secao icone={Building2} titulo="Entidades empregadoras"descricao="Adicione até 3 fontes de renda." 
                         acao={
-                            <span className="rounded-full bg-gray-100 px-3 py-1 text-sm font-medium text-suave">
-                            {rendimentos.length} de {MAX_RENDIMENTOS}
-                            </span>
-                        }>
+                                <span className="rounded-full bg-gray-100 px-3 py-1 text-sm font-medium text-suave">
+                                {rendimentos.length} de {MAX_RENDIMENTOS}
+                                </span>}>
                             {rendimentos.length === 0 && (
-                            <p className="mb-3 text-sm text-suave">Nenhum empregador cadastrado ainda.</p>
+                                <p className="mb-3 text-sm text-suave">Nenhum empregador cadastrado ainda.</p>
                             )}
 
                             <div className="flex flex-col gap-3">
                                 {rendimentos.map((r, i) => (
-                                <div
-                                    key={r.chave}
-                                    className="flex items-start gap-3 rounded-xl border border-borda bg-fundo p-4">
+                                <div key={r.chave} className="flex items-start gap-3 rounded-xl border border-borda bg-fundo p-4">
                                     <span className="mt-9 grid size-7 shrink-0 place-items-center rounded-full bg-marca-50 text-xs font-bold text-marca-600">
                                     {i + 1}
                                     </span>
@@ -233,22 +243,14 @@ export default function DadosCliente() {
                                             onChange={(e) => alterarRendimento(r.chave, "valor", e.target.value)}
                                             erro={erros[`rendimentos[${i}].valor`]}/>
                                     </div>
-                                    <button
-                                    type="button"
-                                    onClick={() => removerRendimento(r.chave)}
-                                    aria-label={`Remover empregador ${i + 1}`}
-                                    className="mt-8 grid size-9 shrink-0 cursor-pointer place-items-center rounded-lg border border-red-200 text-perigo hover:bg-perigo-fundo">
+                                    <button type="button" onClick={() => removerRendimento(r.chave)} aria-label={`Remover empregador ${i + 1}`} className="mt-8 grid size-9 shrink-0 cursor-pointer place-items-center rounded-lg border border-red-200 text-perigo hover:bg-perigo-fundo" >
                                         <Trash2 size={16} />
                                     </button>
                                 </div>
                                 ))}
                             </div>
 
-                            <button
-                                type="button"
-                                onClick={adicionarRendimento}
-                                disabled={rendimentos.length >= MAX_RENDIMENTOS}
-                                className="mt-4 inline-flex cursor-pointer items-center gap-2 rounded-lg border border-dashed border-marca-600 px-4 py-2 text-sm font-semibold text-marca-600 hover:bg-marca-50 disabled:cursor-not-allowed disabled:opacity-50">
+                            <button type="button" onClick={adicionarRendimento} disabled={rendimentos.length >= MAX_RENDIMENTOS} className="mt-4 inline-flex cursor-pointer items-center gap-2 rounded-lg border border-dashed border-marca-600 px-4 py-2 text-sm font-semibold text-marca-600 hover:bg-marca-50 disabled:cursor-not-allowed disabled:opacity-50">
                                 <Plus size={16} /> Adicionar empregador
                             </button>
                             {erros.rendimentos && (
@@ -257,10 +259,7 @@ export default function DadosCliente() {
                         </Secao>
 
                         <div className="flex flex-wrap items-center justify-between gap-4 p-6 lg:px-8">
-                            <button
-                                type="button"
-                                onClick={() => setConfirmandoExclusao(true)}
-                                className="flex cursor-pointer items-center gap-2 text-sm font-semibold text-perigo hover:underline">
+                            <button type="button" onClick={() => setConfirmandoExclusao(true)} className="flex cursor-pointer items-center gap-2 text-sm font-semibold text-perigo hover:underline">
                                 <Trash2 size={16} /> Excluir minha conta
                             </button>
                             <Botao disabled={salvando}>

@@ -1,6 +1,7 @@
 package br.com.aluguel.backend.model;
 
 import jakarta.persistence.*;
+import java.math.BigDecimal;
 
 @Entity
 @Table(name = "automovel")
@@ -25,11 +26,14 @@ public class Automovel {
     @Column(nullable = false)
     private String placa;
 
+    // Opcional no banco para não quebrar pedidos antigos; a API exige em pedidos novos
+    @Column(precision = 12, scale = 2)
+    private BigDecimal valor;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private TipoProprietario proprietario;
 
-    
     public Long getId() {
         return id;
     }
@@ -72,6 +76,14 @@ public class Automovel {
 
     public void setPlaca(String placa) {
         this.placa = placa;
+    }
+
+    public BigDecimal getValor() {
+        return valor;
+    }
+
+    public void setValor(BigDecimal valor) {
+        this.valor = valor;
     }
 
     public TipoProprietario getProprietario() {

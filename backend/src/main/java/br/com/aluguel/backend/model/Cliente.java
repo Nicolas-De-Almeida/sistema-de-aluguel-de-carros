@@ -18,10 +18,13 @@ public class Cliente extends Usuario {
 
     private String profissao;
 
+    // Score de crédito informado pelo cliente (0 a 1000)
+    private Integer scoreCredito;
+
     @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Rendimento> rendimentos = new ArrayList<>();
 
-    // Regra do sistema, no máximo 3 rendimentos por cliente
+    // Regra do sistema: no máximo 3 rendimentos por cliente
     public void adicionarRendimento(Rendimento rendimento) {
         if (rendimentos.size() >= 3) {
             throw new IllegalStateException("O cliente pode ter no máximo 3 rendimentos");
@@ -36,7 +39,6 @@ public class Cliente extends Usuario {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
-    
     public String getRg() {
         return rg;
     }
@@ -67,6 +69,14 @@ public class Cliente extends Usuario {
 
     public void setProfissao(String profissao) {
         this.profissao = profissao;
+    }
+
+    public Integer getScoreCredito() {
+        return scoreCredito;
+    }
+
+    public void setScoreCredito(Integer scoreCredito) {
+        this.scoreCredito = scoreCredito;
     }
 
     public List<Rendimento> getRendimentos() {
